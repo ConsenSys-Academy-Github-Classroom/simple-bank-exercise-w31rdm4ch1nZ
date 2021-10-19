@@ -14,7 +14,7 @@ contract SimpleBank {
     
     // Fill in the visibility keyword. 
     // Hint: We want to protect our users balance from other contracts
-    mapping (address => uint) private balances;
+    mapping (address => uint) internal balances;
     
     // Fill in the visibility keyword
     // Hint: We want to create a getter function and allow contracts to be able
@@ -29,14 +29,14 @@ contract SimpleBank {
      */
     
     // Add an argument for this event, an accountAddress
-    event LogEnrolled(address _isEnrolled);
+    event LogEnrolled(address accountAddress);
 
     // Add 2 arguments for this event, an accountAddress and an amount
-    event LogDepositMade(address _account, uint _amount);
+    event LogDepositMade(address accountAddress, uint amount);
 
     // Create an event called LogWithdrawal
     // Hint: it should take 3 arguments: an accountAddress, withdrawAmount and a newBalance 
-    event LogWithdrawal(address _accountAddr, uint _withdrawAmount, uint _newBalance);
+    event LogWithdrawal(address accountAddress, uint withdrawAmount, uint newBalance);
 
     /* Functions
      */
@@ -76,7 +76,7 @@ contract SimpleBank {
       // 1. Add the appropriate keyword so that this function can receive ether
     
       // 2. Users should be enrolled before they can make deposits
-      require(enrolled[msg.sender]==true, "User is not yet enrolled");
+      require(enrolled[msg.sender] == true, "User is not yet enrolled");
       // 3. Add the amount to the user's balance. Hint: the amount can be
       //    accessed from of the global variable `msg`
       balances[msg.sender] += msg.value;
@@ -96,13 +96,13 @@ contract SimpleBank {
       // to the user attempting to withdraw. 
       // return the user's balance.
       // 1. Use a require expression to guard/ensure sender has enough funds
-      require(balances[msg.sender] >= withdrawAmount, "Sender has not enought funds");
+      require(balances[msg.sender] >= withdrawAmount, "Sender has not enough funds");
 
       // 2. Transfer Eth to the sender and decrement the withdrawal amount from
       //    sender's balance
       //msg.sender.transfer(withdrawAmount);
-      balances[msg.sender] -= withdrawAmount;
-      (bool success,) = msg.sender.call{value: withdrawAmount}("");
+      address(msg.sender).call.value(withdrawAmount)("");
+      balances[msg.sender] -= withdrawAmount;  
       // 3. Emit the appropriate event for this message
       emit LogWithdrawal(msg.sender, withdrawAmount, balances[msg.sender]);
       

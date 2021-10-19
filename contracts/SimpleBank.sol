@@ -36,7 +36,7 @@ contract SimpleBank {
 
     // Create an event called LogWithdrawal
     // Hint: it should take 3 arguments: an accountAddress, withdrawAmount and a newBalance 
-    event LogWithdrawal(address _accountAddr, uint _newBalance, uint _amount);
+    event LogWithdrawal(address _accountAddr, uint _withdrawAmount, uint _newBalance);
 
     /* Functions
      */
@@ -76,7 +76,7 @@ contract SimpleBank {
       // 1. Add the appropriate keyword so that this function can receive ether
     
       // 2. Users should be enrolled before they can make deposits
-      require(enrolled[msg.sender], "User is not yet enrolled");
+      require(enrolled[msg.sender]==true, "User is not yet enrolled");
       // 3. Add the amount to the user's balance. Hint: the amount can be
       //    accessed from of the global variable `msg`
       balances[msg.sender] += msg.value;
@@ -100,11 +100,9 @@ contract SimpleBank {
 
       // 2. Transfer Eth to the sender and decrement the withdrawal amount from
       //    sender's balance
-      //(bool success,) = to.call{value: msg.value}("");
-      //balances[owner][msg.value] -= withdrawAmount;
-      //balances[msg.sender] += withdrawAmount;
+      //msg.sender.transfer(withdrawAmount);
       balances[msg.sender] -= withdrawAmount;
-      //balances[owner] += withdrawAmount;
+      (bool success,) = msg.sender.call{value: withdrawAmount}("");
       // 3. Emit the appropriate event for this message
       emit LogWithdrawal(msg.sender, withdrawAmount, balances[msg.sender]);
       
